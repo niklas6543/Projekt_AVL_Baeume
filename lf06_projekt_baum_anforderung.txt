@@ -1,0 +1,33 @@
+Anforderungen
+
+class TElement{
+    private int data;
+    private TElement left;
+    private TElement right;
+}
+
+a) insertElement()
+b) deleteElement()
+a) InOrder()
+a) PreOrder()
+a) PostOrder()
+a) FindElement()
+
+         
+1) a) - 09.04.18
+2) b) - 
+3) grafische Oberfläche * Doku
+4) AVL beim einfügen
+5) AVL beim löschen
+
+Dokumentation Quellcode
+
+Aufgabe:
+Fügt ein Objekt der Klasse TElement in einen Baum ein.
+Eingabeparameter: r: TElement : BaumTE
+                  e: TElement : neues Element
+Rückgabeparameter: i: 0:Fehler, 1:OK, 2:Element schon im Baum
+Version:
+Änderung:
+ 
+function insertElement(...)
