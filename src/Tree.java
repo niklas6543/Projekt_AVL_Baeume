@@ -73,9 +73,9 @@ public class Tree {
     }
 
     /**
-     * insert new elements
+     * inserts new elements
      *
-     * @param e : TElement : root element to start
+     * @param e : TElement : current element
      * @param newElement : TElement : element to insert
      * @version 1.0
      */
@@ -111,6 +111,10 @@ public class Tree {
     /**
      * recursive function to delete an element
      *
+     * type1 = left = null or right = null
+     * type2 = left and right = null
+     * type3 = left and right != null
+     *
      * @param e : TElement : current element
      * @param delElement : TElement : element to delete
      */
@@ -126,9 +130,27 @@ public class Tree {
         {
             // right element of current like delElement
             if (e.getRight() == delElement) {
-                // changes right element of the current element to left child of delElement
-                e.setRight(delElement.getLeft());
-                delElement.getLeft().setRight(delElement.getRight());
+
+                if (delElement.getLeft() == null) {
+                    if (delElement.getRight() == null) {
+                        // type2
+                        // delete element reference
+                        e.setRight(null);
+                    } else {
+                        // typ1
+                        // changes right element of the current element to right child of delElement
+                        e.setRight(delElement.getRight());
+                    }
+                } else {
+                    if (delElement.getRight() == null) {
+                        // type1
+                        // changes right element of the current element to left child of delElement
+                        e.setRight(delElement.getLeft());
+                    }
+                }
+
+
+                //delElement.getLeft().setRight(delElement.getRight());
                 return;
             }
             _deleteElement(e.getRight(), delElement);
@@ -138,9 +160,21 @@ public class Tree {
         {
             // left element of current like delElement
             if (e.getLeft() == delElement) {
-                // changes left element of the current element to right child of delElement
-                e.setLeft(delElement.getRight());
-                delElement.getRight().setLeft(delElement.getLeft());
+
+                if (delElement.getRight() == null) {
+                    if (delElement.getLeft() == null) {
+                        e.setLeft(null);
+                    } else {
+                        // changes left element of the current element to right child of delElement
+                        e.setLeft(delElement.getLeft());
+                    }
+                } else {
+                    if (delElement.getLeft() == null) {
+                        // changes right element of the current element to left child of delElement
+                        e.setLeft(delElement.getRight());
+                    }
+                }
+                //delElement.getRight().setLeft(delElement.getLeft());
                 return;
             }
             _deleteElement(e.getLeft(), delElement);
@@ -148,7 +182,7 @@ public class Tree {
     }
 
     /**
-     * OrderTypes for sorting the tree
+     * OrderTypes to sort the tree
      */
     public enum OrderType {
         InOrder,
@@ -205,6 +239,10 @@ public class Tree {
         this._insertElement(this.root, newElement);
     }
 
+    /**
+     *
+     * @param delElements
+     */
     public void deleteElement(ArrayList<TElement> delElements)
     {
         for (TElement e : delElements) {
@@ -294,7 +332,9 @@ public class Tree {
         }
 
         // set element size
-        double ELEMENT_SIZE = 50.0D;
+        final double MAX_ELEMENT_SIZE = 50;
+        final double RADIUS_X = 20;
+        final double RADIUS_Y = 20;
 
         // get the right and left part of tree
         ArrayList<TElement> left = _getElements(e.getLeft(), OrderType.InOrder);
@@ -308,7 +348,7 @@ public class Tree {
         double elementSpace = width / (leftSize + rightSize);
 
         // draw the element as ellipse
-        Ellipse element = new Ellipse(x + width / 2.0D, y + 25.0D, 16.666666666666668D, 16.666666666666668D);
+        Ellipse element = new Ellipse(x + width / 2, y + (MAX_ELEMENT_SIZE/2), RADIUS_X, RADIUS_Y);
 
         // set the fill color
         element.setFill(Color.CORNFLOWERBLUE);
@@ -318,28 +358,28 @@ public class Tree {
 
         // add notice to element
         Text t = new Text();
-        t.setFont(new Font(20.0D));
-        t.setX(x + width / 2.0D - 11.111111111111112D);
-        t.setY(y + 25.0D + 8.333333333333334D);
+        t.setFont(new Font(20));
+        t.setX(x + width / 2 - 11);
+        t.setY(y + (MAX_ELEMENT_SIZE/2) + 8);
         t.setText(String.valueOf(e.getData()));
         pane.getChildren().add(t);
 
         // save the last element position to connect them with a line
         ArrayList<Point2D> points = new ArrayList();
 
-        points.add(_draw(pane, e.getLeft(), x, y + 50.0D, elementSpace * leftSize, height - 50.0D));
-        points.add(_draw(pane, e.getRight(), x + elementSpace * leftSize, y + 50.0D, elementSpace * rightSize, height - 50.0D));
+        points.add(_draw(pane, e.getLeft(), x, y + MAX_ELEMENT_SIZE, elementSpace * leftSize, height - MAX_ELEMENT_SIZE));
+        points.add(_draw(pane, e.getRight(), x + elementSpace * leftSize, y + MAX_ELEMENT_SIZE, elementSpace * rightSize, height - MAX_ELEMENT_SIZE));
 
         // draw a line between the elements
         for (Point2D point : points) {
             if (point != null)
             {
-                pane.getChildren().add(new Line(point.getX(), point.getY(), x + width / 2.0D, y + 25.0D + 16.666666666666668D));
+                pane.getChildren().add(new Line(point.getX(), point.getY(), x + width / 2, y + (MAX_ELEMENT_SIZE/2) + RADIUS_Y));
             }
         }
 
         // return the current element position
-        return new Point2D(x + width / 2.0D, y + 25.0D - 16.666666666666668D);
+        return new Point2D(x + width / 2, y + (MAX_ELEMENT_SIZE/2) - RADIUS_Y);
     }
 
     /**
@@ -349,7 +389,7 @@ public class Tree {
      */
     public void draw(AnchorPane anchorPane)
     {
-        _draw(anchorPane, root, 0.0D, 0.0D, anchorPane.getWidth(), anchorPane.getHeight());
+        _draw(anchorPane, this.root, 0, 0, anchorPane.getWidth(), anchorPane.getHeight());
     }
 
 

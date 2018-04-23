@@ -23,7 +23,7 @@ public class FormStage {
         //this.anchorPane = new AnchorPane();
         this.gridPane = new GridPane();
 
-        Scene scene = new Scene(gridPane, 300, 200);
+        Scene scene = new Scene(gridPane, 400, 200);
 
 
         TextField txtNodeAdd = new TextField();
