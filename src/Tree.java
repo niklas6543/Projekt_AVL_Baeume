@@ -16,7 +16,7 @@ public class Tree {
     private TElement root;
 
     /**
-     * constructor from class Tree
+     * constructor of class Tree
      * generates elements and build the tree
      *
      * @param size : int : size of tree / count of elements
@@ -73,7 +73,10 @@ public class Tree {
     }
 
     /**
-     * inserts new elements
+     * insert new elements
+     *
+     * recursive function to walk through the tree
+     * inserts newElement if the child element is null
      *
      * @param e : TElement : current element
      * @param newElement : TElement : element to insert
@@ -104,19 +107,63 @@ public class Tree {
                 // insert new element
                 _insertElement(e.getLeft(), newElement);
             }
-
         }
+    }
+
+    /**
+     * checks cases of deleting an element
+     *
+     * we have 3 cases to delete an element
+     * case1 = left = null or right = null
+     * case2 = left and right = null
+     * case3 = left and right != null
+     *
+     * @param e : TElement : parent of delElement
+     * @param delElement : TElement : element to delete
+     * @return TElement or null : result will be used for replacing delElement
+     * @version 2.0
+     */
+    private TElement _handleDeleteElement(TElement e, TElement delElement) {
+        if (delElement.getLeft() == null) {
+           if (delElement.getRight() == null) {
+               // case2 - left and right = null
+               // delete right or left child of e
+               return null;
+            } else {
+                // case1 - left = null and right != null
+                // returns right child of delElement
+               return delElement.getRight();
+            }
+        } else if (delElement.getLeft() != null){
+            if (delElement.getRight() == null) {
+                // case1 - left != null and right = null
+                // returns left child of delElement
+                return delElement.getLeft();
+            } else {
+                // case3 - left and right != null
+                // move delElement.getRight one layer on top
+                e.setRight(delElement.getRight());
+
+                // reinsert delElement.getLeft
+                _insertElement(e.getRight(), delElement.getLeft());
+
+                // returns right child of delElement
+                return delElement.getRight();
+            }
+        }
+        return null;
     }
 
     /**
      * recursive function to delete an element
      *
-     * type1 = left = null or right = null
-     * type2 = left and right = null
-     * type3 = left and right != null
+     * the function walks through the tree and searches for the delElement
+     * then it calls a function to handle the deletion
      *
      * @param e : TElement : current element
      * @param delElement : TElement : element to delete
+     * @return : if an element was delete
+     * @version 2.0
      */
     private void _deleteElement(TElement e, TElement delElement)
     {
@@ -126,60 +173,48 @@ public class Tree {
         }
 
         // is the delElement greater then e
-        if (e.getData() <= delElement.getData())
-        {
-            // right element of current like delElement
+        if (e.getData() <= delElement.getData()) {
+            // right element of current element like delElement
             if (e.getRight() == delElement) {
-
+                e.setRight(_handleDeleteElement(e, delElement));
+                return;
+            } else if (this.root == delElement) {
                 if (delElement.getLeft() == null) {
-                    if (delElement.getRight() == null) {
-                        // type2
-                        // delete element reference
-                        e.setRight(null);
-                    } else {
-                        // typ1
-                        // changes right element of the current element to right child of delElement
-                        e.setRight(delElement.getRight());
+                    if (delElement.getRight() != null) {
+                        // case1
+                        // set right element as new root
+                        this.root = delElement.getRight();
                     }
                 } else {
                     if (delElement.getRight() == null) {
-                        // type1
-                        // changes right element of the current element to left child of delElement
-                        e.setRight(delElement.getLeft());
+                        // case1
+                        // set left element as new root
+                        this.root = delElement.getLeft();
+                    } else {
+                        // case3
+                        // set right element as new root
+                        this.root = delElement.getRight();
+
+                        // save delElement.getLeft in a helper object delElementLeft
+                        TElement delElementLeft = delElement.getLeft();
+
+                        // insert delElementLeft
+                        _insertElement(this.root, delElementLeft);
                     }
                 }
-
-
-                //delElement.getLeft().setRight(delElement.getRight());
-                return;
+            } else {
+                _deleteElement(e.getRight(), delElement);
             }
-            _deleteElement(e.getRight(), delElement);
-
-        }
-        else
-        {
-            // left element of current like delElement
+        } else {
             if (e.getLeft() == delElement) {
-
-                if (delElement.getRight() == null) {
-                    if (delElement.getLeft() == null) {
-                        e.setLeft(null);
-                    } else {
-                        // changes left element of the current element to right child of delElement
-                        e.setLeft(delElement.getLeft());
-                    }
-                } else {
-                    if (delElement.getLeft() == null) {
-                        // changes right element of the current element to left child of delElement
-                        e.setLeft(delElement.getRight());
-                    }
-                }
-                //delElement.getRight().setLeft(delElement.getLeft());
+                e.setLeft(_handleDeleteElement(e, delElement));
                 return;
+            } else {
+                _deleteElement(e.getLeft(), delElement);
             }
-            _deleteElement(e.getLeft(), delElement);
         }
     }
+
 
     /**
      * OrderTypes to sort the tree
@@ -240,21 +275,26 @@ public class Tree {
     }
 
     /**
+     * calls a recursive function to delete elements
      *
      * @param delElements
+     * @version 2.0
      */
     public void deleteElement(ArrayList<TElement> delElements)
     {
         for (TElement e : delElements) {
-            _deleteElement(root, e);
+            _deleteElement(this.root, e);
         }
     }
 
     /**
      * search for elements by data
      *
+     * gets all elements as a list and search for the element to be searched
+     *
      * @param data : int : number of the element
      * @return elements : ArrayList<TElement> : all elements who had the same data
+     * @version 1.0
      */
     public ArrayList<TElement> findElementByData(int data) {
         ArrayList<TElement> elements = new ArrayList<>();
@@ -323,6 +363,7 @@ public class Tree {
      * @param width : double : max width of current elements
      * @param height : double : max height of current elements
      * @return ArrayList<Points2D>() : return the current element position
+     * @version 2.0
      */
     public Point2D _draw(AnchorPane pane, TElement e, double x, double y, double width, double height)
     {
@@ -386,6 +427,7 @@ public class Tree {
      * calls a recursive function to draw the tree
      *
      * @param anchorPane : AnchorPane : pane of stage to draw the tree
+     * @version 2.0
      */
     public void draw(AnchorPane anchorPane)
     {
