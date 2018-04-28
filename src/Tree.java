@@ -140,15 +140,29 @@ public class Tree {
                 // returns left child of delElement
                 return delElement.getLeft();
             } else {
-                // case3 - left and right != null
-                // move delElement.getRight one layer on top
-                e.setRight(delElement.getRight());
+                /// case3 - left and right != null
+                // checks that the delElement is on the right side of parent
+                if (e.getRight() == delElement) {
+                    // case3 - left and right != null
+                    // move delElement.getRight one layer on top
+                    e.setRight(delElement.getRight());
 
-                // reinsert delElement.getLeft
-                _insertElement(e.getRight(), delElement.getLeft());
+                    // reinsert delElement.getLeft
+                    _insertElement(e.getRight(), delElement.getLeft());
 
-                // returns right child of delElement
-                return delElement.getRight();
+                    // returns right child of delElement
+                    return delElement.getRight();
+                } else if (e.getLeft() == delElement){
+                    // case3 - left and right != null
+                    // move delElement.getLeft one layer on top
+                    e.setLeft(delElement.getRight());
+
+                    // reinsert delElement.getLeft
+                    _insertElement(e.getLeft(), delElement.getLeft());
+
+                    // returns right child of delElement
+                    return delElement.getRight();
+                }
             }
         }
         return null;
@@ -206,6 +220,7 @@ public class Tree {
                 _deleteElement(e.getRight(), delElement);
             }
         } else {
+            // left element of current element like delElement
             if (e.getLeft() == delElement) {
                 e.setLeft(_handleDeleteElement(e, delElement));
                 return;
